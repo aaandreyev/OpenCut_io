@@ -24,6 +24,7 @@ import {
   Eye,
   VolumeOff,
   Volume2,
+  Brain,
 } from "lucide-react";
 import {
   Tooltip,
@@ -67,9 +68,6 @@ import {
   TIMELINE_CONSTANTS,
   snapTimeToFrame,
 } from "@/constants/timeline-constants";
-import { Slider } from "@/components/ui/slider";
-import { formatTimeCode } from "@/lib/time";
-import { EditableTimecode } from "@/components/ui/editable-timecode";
 import { TimelineToolbar } from "./timeline-toolbar";
 
 export function Timeline() {
@@ -524,7 +522,6 @@ export function Timeline() {
     onDragLeave: handleDragLeave,
     onDrop: handleDrop,
   };
-
   // --- Scroll synchronization effect ---
   useEffect(() => {
     const rulerViewport = rulerScrollRef.current;
