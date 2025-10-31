@@ -27,6 +27,13 @@ jobs:
       NEXT_PUBLIC_BETTER_AUTH_URL: "http://localhost:3000"
       UPSTASH_REDIS_REST_URL: "https://your-upstash-redis-url"
       UPSTASH_REDIS_REST_TOKEN: "your-upstash-redis-token"
+      FREESOUND_CLIENT_ID: "ci-dummy-client-id"
+      FREESOUND_API_KEY: "ci-dummy-api-key"
+      CLOUDFLARE_ACCOUNT_ID: "ci-dummy-account-id"
+      R2_ACCESS_KEY_ID: "ci-dummy-access-key-id"
+      R2_SECRET_ACCESS_KEY: "ci-dummy-secret-access-key"
+      R2_BUCKET_NAME: "ci-dummy-bucket-name"
+      MODAL_TRANSCRIPTION_URL: "https://ci-dummy-url.modal.run"
 
     steps:
       - name: Checkout repository
