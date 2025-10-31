@@ -293,7 +293,7 @@ export function AILivePreview({
                       <div key={index} className="bg-gray-800/50 rounded p-2">
                         <div className="flex items-center justify-between mb-1">
                           <span className="text-xs font-medium">{effect.name}</span>
-                          <Badge variant="outline" size="sm" className="text-xs">
+                          <Badge variant="outline" className="text-xs">
                             {Math.round(effect.confidence * 100)}%
                           </Badge>
                         </div>
