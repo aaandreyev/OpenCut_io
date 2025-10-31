@@ -357,7 +357,7 @@ export function AILivePreview({
                     <div className="mt-2">
                       <span className="text-xs text-gray-300">Cut suggestions: </span>
                       {currentAnalysis.sceneContext.recommendedCutPoints.slice(0, 3).map((time, index) => (
-                        <Badge key={index} variant="outline" size="sm" className="text-xs mr-1">
+                        <Badge key={index} variant="outline" className="text-xs mr-1">
                           {time.toFixed(1)}s
                         </Badge>
                       ))}
