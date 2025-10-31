@@ -119,6 +119,26 @@ describe("FrameCacheManager", () => {
     expect(manager.memoryUsageBytes).toBe(0);
   });
 
+  it("preserves existing frames when a new frame exceeds the memory budget", () => {
+    const manager = new FrameCacheManager(shared, {
+      ...BASE_OPTIONS,
+      maxMemoryUsageMB: 0.00001, // ~10 bytes
+    }, () => ++now);
+
+    const tracks = createTracks();
+
+    manager.cacheFrame(0, createImageData(4), tracks, [], null);
+
+    expect(manager.cacheSize).toBe(1);
+    const cachedFrame = manager.getCachedFrame(0, tracks, [], null);
+    expect(cachedFrame).not.toBeNull();
+
+    manager.cacheFrame(1 / 30, createImageData(1024), tracks, [], null);
+    expect(manager.cacheSize).toBe(1);
+    expect(manager.getCachedFrame(0, tracks, [], null)).toBe(cachedFrame);
+    expect(manager.isFrameCached(0, tracks, [], null)).toBe(true);
+  });
+
   it("invalidates cached frames when timeline state changes", () => {
     const manager = new FrameCacheManager(shared, BASE_OPTIONS, () => ++now);
     const tracks = createTracks();

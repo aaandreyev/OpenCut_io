@@ -271,8 +271,12 @@ export class FrameCacheManager {
     const maxCacheSize = Math.floor(clampNonNegative(this.options.maxCacheSize));
     const maxMemoryBytes = this.maxMemoryBytes;
 
-    if (maxCacheSize <= 0 || newFrameSize > maxMemoryBytes) {
+    if (maxCacheSize <= 0) {
       this.clear();
+      return false;
+    }
+
+    if (newFrameSize > maxMemoryBytes) {
       return false;
     }
 
