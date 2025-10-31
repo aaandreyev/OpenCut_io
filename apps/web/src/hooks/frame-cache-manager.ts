@@ -24,6 +24,39 @@ export interface FrameCacheSharedResources {
   stats: CacheStats;
 }
 
+type MediaElementSnapshot =
+  Pick<
+    MediaElement,
+    "id" | "type" | "startTime" | "duration" | "trimStart" | "trimEnd" | "mediaId"
+  > & {
+    muted: boolean;
+  };
+
+type TextElementSnapshot = Pick<
+  TextElement,
+  | "id"
+  | "type"
+  | "startTime"
+  | "duration"
+  | "trimStart"
+  | "trimEnd"
+  | "content"
+  | "fontSize"
+  | "fontFamily"
+  | "color"
+  | "backgroundColor"
+  | "x"
+  | "y"
+  | "rotation"
+  | "opacity"
+  | "textAlign"
+  | "fontWeight"
+  | "fontStyle"
+  | "textDecoration"
+>;
+
+type ActiveElementSnapshot = MediaElementSnapshot | TextElementSnapshot;
+
 export const DEFAULT_FRAME_CACHE_OPTIONS: Required<FrameCacheOptions> = {
   maxCacheSize: 300,
   cacheResolution: 30,
@@ -71,48 +104,8 @@ export function getSharedResources(): FrameCacheSharedResources {
 function computeActiveElements(
   time: number,
   tracks: TimelineTrack[]
-): Array<{
-  id: string;
-  type: string;
-  startTime: number;
-  duration: number;
-  trimStart: number;
-  trimEnd: number;
-  mediaId?: string;
-  muted?: boolean;
-  content?: string;
-  fontSize?: number;
-  fontFamily?: string;
-  color?: string;
-  backgroundColor?: string;
-  x?: number;
-  y?: number;
-  rotation?: number;
-  opacity?: number;
-  textAlign?: string;
-  fontWeight?: string;
-  fontStyle?: string;
-  textDecoration?: string;
-}> {
-  const active: Array<{
-    id: string;
-    type: string;
-    startTime: number;
-    duration: number;
-    trimStart: number;
-    trimEnd: number;
-    mediaId?: string;
-    muted?: boolean;
-    content?: string;
-    fontSize?: number;
-    fontFamily?: string;
-    color?: string;
-    backgroundColor?: string;
-    x?: number;
-    y?: number;
-    rotation?: number;
-    opacity?: number;
-  }> = [];
+): ActiveElementSnapshot[] {
+  const active: ActiveElementSnapshot[] = [];
 
   for (const track of tracks) {
     if (track.muted) continue;
