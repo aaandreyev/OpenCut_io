@@ -375,7 +375,6 @@ export function AILivePreview({
               <Switch 
                 checked={overlaysEnabled} 
                 onCheckedChange={setOverlaysEnabled}
-                size="sm"
               />
             </div>
             
@@ -384,7 +383,6 @@ export function AILivePreview({
               <Switch 
                 checked={performanceMode} 
                 onCheckedChange={setPerformanceMode}
-                size="sm"
               />
             </div>
           </div>
