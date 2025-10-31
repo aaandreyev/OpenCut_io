@@ -7,6 +7,9 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
+    "type-check": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "lint": "biome check src/",
     "lint:fix": "biome check src/ --write",
     "format": "biome format src/ --write",
@@ -79,11 +82,15 @@
     "@types/pg": "^8.15.4",
     "@types/react": "^18.2.48",
     "@types/react-dom": "^18.2.18",
+    "@testing-library/react": "^16.1.0",
+    "@vitest/ui": "^2.1.8",
     "cross-env": "^7.0.3",
     "drizzle-kit": "^0.31.4",
+    "jsdom": "^25.0.1",
     "postcss": "^8",
     "tailwindcss": "^4.1.11",
     "tsx": "^4.7.1",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "vitest": "^2.1.8"
   }
 }
