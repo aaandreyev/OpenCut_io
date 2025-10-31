@@ -6,6 +6,7 @@ import {
   type FrameCacheSharedResources,
 } from "../frame-cache-manager";
 import type { TimelineTrack } from "@/types/timeline";
+import type { TProject } from "@/types/project";
 
 const BASE_OPTIONS = {
   ...DEFAULT_FRAME_CACHE_OPTIONS,
@@ -47,6 +48,61 @@ function createTracks(): TimelineTrack[] {
       muted: false,
     },
   ];
+}
+
+function createTextTracks(): TimelineTrack[] {
+  return [
+    {
+      id: "text-track-1",
+      name: "Text Track",
+      type: "text",
+      elements: [
+        {
+          id: "text-1",
+          name: "Caption",
+          type: "text",
+          startTime: 0,
+          duration: 5,
+          trimStart: 0,
+          trimEnd: 0,
+          hidden: false,
+          content: "Hello",
+          fontSize: 16,
+          fontFamily: "Arial",
+          color: "#000000",
+          backgroundColor: "#ffffff",
+          textAlign: "left",
+          fontWeight: "normal",
+          fontStyle: "normal",
+          textDecoration: "none",
+          x: 0,
+          y: 0,
+          rotation: 0,
+          opacity: 1,
+        },
+      ],
+    },
+  ];
+}
+
+function createProject(): TProject {
+  return {
+    id: "project-1",
+    name: "Demo",
+    thumbnail: "",
+    createdAt: new Date("2024-01-01T00:00:00.000Z"),
+    updatedAt: new Date("2024-01-01T00:00:00.000Z"),
+    scenes: [],
+    currentSceneId: "scene-1",
+    mediaItems: [],
+    backgroundColor: "#ffffff",
+    backgroundType: "color" as const,
+    blurIntensity: 4 as const,
+    fps: 30,
+    bookmarks: [1],
+    canvasSize: { width: 1920, height: 1080 },
+    canvasMode: "preset" as const,
+  };
 }
 
 describe("FrameCacheManager", () => {
@@ -165,5 +221,47 @@ describe("FrameCacheManager", () => {
 
     expect(manager.cacheSize).toBe(1);
     expect(manager.memoryUsageBytes).toBe(8);
+  });
+
+  it("updates recency when checking an existing frame", () => {
+    const manager = new FrameCacheManager(shared, BASE_OPTIONS, () => ++now);
+    const tracks = createTracks();
+
+    manager.cacheFrame(0, createImageData(4), tracks, [], createProject());
+    const frameKey = Math.floor(0 * BASE_OPTIONS.cacheResolution);
+    const before = shared.cache.get(frameKey);
+    expect(before?.timestamp).toBe(1);
+
+    const cached = manager.isFrameCached(0, tracks, [], createProject());
+    expect(cached).toBe(true);
+    const after = shared.cache.get(frameKey);
+    expect(after?.timestamp).toBe(2);
+  });
+
+  it("invalidates cached text frames when text styling changes", () => {
+    const manager = new FrameCacheManager(shared, BASE_OPTIONS, () => ++now);
+    const tracks = createTextTracks();
+    const project = createProject();
+
+    manager.cacheFrame(0, createImageData(4), tracks, [], project);
+    expect(manager.isFrameCached(0, tracks, [], project)).toBe(true);
+
+    const updatedTracks = createTextTracks();
+    updatedTracks[0].elements[0].textAlign = "center";
+
+    expect(manager.isFrameCached(0, updatedTracks, [], project)).toBe(false);
+  });
+
+  it("invalidates cached frames when project context changes", () => {
+    const manager = new FrameCacheManager(shared, BASE_OPTIONS, () => ++now);
+    const tracks = createTracks();
+    const project = createProject();
+
+    manager.cacheFrame(0, createImageData(4), tracks, [], project);
+    expect(manager.isFrameCached(0, tracks, [], project)).toBe(true);
+
+    const updatedProject = { ...project, bookmarks: [1, 2] };
+
+    expect(manager.isFrameCached(0, tracks, [], updatedProject)).toBe(false);
   });
 });

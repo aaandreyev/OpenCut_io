@@ -79,6 +79,7 @@ function computeActiveElements(
   trimStart: number;
   trimEnd: number;
   mediaId?: string;
+  muted?: boolean;
   content?: string;
   fontSize?: number;
   fontFamily?: string;
@@ -88,6 +89,10 @@ function computeActiveElements(
   y?: number;
   rotation?: number;
   opacity?: number;
+  textAlign?: string;
+  fontWeight?: string;
+  fontStyle?: string;
+  textDecoration?: string;
 }> {
   const active: Array<{
     id: string;
@@ -130,6 +135,7 @@ function computeActiveElements(
             trimStart: element.trimStart,
             trimEnd: element.trimEnd,
             mediaId: mediaElement.mediaId,
+            muted: mediaElement.muted ?? false,
           });
         } else if (element.type === "text") {
           const textElement = element as TextElement;
@@ -149,6 +155,10 @@ function computeActiveElements(
             y: textElement.y,
             rotation: textElement.rotation,
             opacity: textElement.opacity,
+            textAlign: textElement.textAlign,
+            fontWeight: textElement.fontWeight,
+            fontStyle: textElement.fontStyle,
+            textDecoration: textElement.textDecoration,
           });
         }
       }
@@ -219,6 +229,10 @@ export class FrameCacheManager {
       backgroundType: activeProject?.backgroundType,
       blurIntensity: activeProject?.blurIntensity,
       canvasSize: activeProject?.canvasSize,
+      canvasMode: activeProject?.canvasMode,
+      currentSceneId: activeProject?.currentSceneId,
+      fps: activeProject?.fps,
+      bookmarks: activeProject?.bookmarks,
     };
 
     const clampedTime =
@@ -328,6 +342,8 @@ export class FrameCacheManager {
     const matches = cached.timelineHash === currentHash;
     if (!matches) {
       this.removeFrame(frameKey);
+    } else {
+      this.touchFrame(frameKey);
     }
     return matches;
   }
