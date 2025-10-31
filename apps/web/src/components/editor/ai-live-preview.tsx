@@ -325,7 +325,7 @@ export function AILivePreview({
                       <span className="text-xs font-medium">
                         {currentAnalysis.currentFrame.colorGradingSuggestion.style} Style
                       </span>
-                      <Badge variant="outline" size="sm" className="text-xs">
+                      <Badge variant="outline" className="text-xs">
                         {Math.round(currentAnalysis.currentFrame.colorGradingSuggestion.confidence * 100)}%
                       </Badge>
                     </div>
