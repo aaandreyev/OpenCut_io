@@ -49,7 +49,7 @@ export function AIAnalyzerPanel({ className }: AIAnalyzerPanelProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const { addElementToTrack, addTrack } = useTimelineStore();
-  const { mediaItems } = useMediaStore();
+  const { mediaFiles } = useMediaStore();
   const { seek } = usePlaybackStore();
 
   const handleFileSelect = () => {
@@ -90,7 +90,7 @@ export function AIAnalyzerPanel({ className }: AIAnalyzerPanelProps) {
     const trackId = addTrack("media");
     
     // Find corresponding media item
-    const mediaItem = mediaItems.find((item: any) => item.name === selectedFile?.name);
+    const mediaItem = mediaFiles.find((item) => item.name === selectedFile?.name);
     
     if (mediaItem) {
       addElementToTrack(trackId, {

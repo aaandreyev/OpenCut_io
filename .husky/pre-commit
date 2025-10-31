@@ -1,1 +1,17 @@
-npx ultracite format
+echo "🔍 Running pre-commit checks..."
+
+# Check types in web app only if node_modules exists (dependencies installed)
+if [ -f "apps/web/package.json" ] && [ -d "apps/web/node_modules" ]; then
+  cd apps/web
+  echo "📦 Checking types..."
+  bunx tsc --noEmit || {
+    echo "❌ Type check failed! Please fix errors before committing."
+    exit 1
+  }
+  cd ../..
+elif [ -f "apps/web/package.json" ]; then
+  echo "⚠️  Skipping type check (dependencies not installed). Run 'bun install' to enable."
+fi
+
+echo "✅ Pre-commit checks passed!"
+
