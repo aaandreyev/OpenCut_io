@@ -20,8 +20,7 @@ import {
   TrendingUp,
   Clock,
   Target,
-  Camera,
-  Waveform
+  Camera
 } from "lucide-react";
 import { 
   analyzeVideoContent, 
