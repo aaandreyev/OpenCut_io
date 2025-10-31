@@ -102,6 +102,7 @@ function computeActiveElements(
     trimStart: number;
     trimEnd: number;
     mediaId?: string;
+    muted?: boolean;
     content?: string;
     fontSize?: number;
     fontFamily?: string;
