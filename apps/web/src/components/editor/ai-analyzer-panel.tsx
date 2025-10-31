@@ -365,20 +365,33 @@ export function AIAnalyzerPanel({ className }: AIAnalyzerPanelProps) {
               <Separator />
 
               {/* Face Detection Summary */}
-              {faces.length > 0 && (
-                <div>
-                  <div className="flex items-center gap-2 text-sm font-medium mb-3">
-                    <Camera className="h-4 w-4 text-blue-500" />
-                    Face Detection ({faces.length} moments)
-                  </div>
-                  <div className="bg-blue-50 p-3 rounded-lg">
-                    <div className="text-xs text-blue-700">
-                      AI detected {faces.length} moments with face(s) present. 
-                      Average confidence: {Math.round(faces.reduce((sum, f) => sum + f.faces.reduce((fSum, face) => fSum + face.confidence, 0) / f.faces.length, 0) / faces.length * 100)}%
+              {faces.length > 0 && (() => {
+                const calculateAverageFaceConfidence = (faceDetections: typeof faces) => {
+                  if (faceDetections.length === 0) return 0;
+                  const totalConfidence = faceDetections.reduce((sum, f) => {
+                    const avgConfidence = f.faces.length > 0
+                      ? f.faces.reduce((fSum, face) => fSum + face.confidence, 0) / f.faces.length
+                      : 0;
+                    return sum + avgConfidence;
+                  }, 0);
+                  return Math.round((totalConfidence / faceDetections.length) * 100);
+                };
+
+                return (
+                  <div>
+                    <div className="flex items-center gap-2 text-sm font-medium mb-3">
+                      <Camera className="h-4 w-4 text-blue-500" />
+                      Face Detection ({faces.length} moments)
+                    </div>
+                    <div className="bg-blue-50 p-3 rounded-lg">
+                      <div className="text-xs text-blue-700">
+                        AI detected {faces.length} moments with face(s) present. 
+                        Average confidence: {calculateAverageFaceConfidence(faces)}%
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
+                );
+              })()}
 
               {/* Scene Analysis */}
               <div>

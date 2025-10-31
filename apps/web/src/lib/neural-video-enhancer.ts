@@ -1,14 +1,12 @@
 /**
- * NEURAL VIDEO ENHANCE - Most Advanced Web-based Video Enhancement System
+ * Neural Video Enhancer - WebGL2-based Video Enhancement System
  * 
- * This system provides REVOLUTIONARY video enhancement capabilities:
+ * This system provides GPU-accelerated video enhancement capabilities:
  * - Real-time neural upscaling using WebGL shaders
  * - AI-powered noise reduction and artifact removal
  * - Intelligent temporal stabilization
  * - Content-aware sharpening and detail enhancement
  * - Live performance optimization with GPU acceleration
- * 
- * This pushes the boundaries of what's possible in web browsers!
  */
 
 export interface EnhanceSettings {
@@ -61,6 +59,7 @@ class NeuralVideoEnhancer {
   private programs: Map<string, WebGLProgram> = new Map();
   private textures: Map<string, WebGLTexture> = new Map();
   private framebuffers: Map<string, WebGLFramebuffer> = new Map();
+  private quadBuffer: WebGLBuffer | null = null;
   
   // Neural models
   private models: Map<string, NeuralModel> = new Map();
@@ -114,7 +113,28 @@ class NeuralVideoEnhancer {
     
     // Initialize shaders
     await this.initializeShaders();
+    
+    // Initialize quad buffer for efficient rendering
+    this.initializeQuadBuffer();
+    
     this.isInitialized = true;
+  }
+  
+  private initializeQuadBuffer() {
+    if (!this.gl) return;
+    
+    const vertices = new Float32Array([
+      -1, -1, 0, 0,  // bottom-left
+       1, -1, 1, 0,  // bottom-right
+      -1,  1, 0, 1,  // top-left
+       1,  1, 1, 1,  // top-right
+    ]);
+    
+    this.quadBuffer = this.gl.createBuffer();
+    if (!this.quadBuffer) return;
+    
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.quadBuffer);
+    this.gl.bufferData(this.gl.ARRAY_BUFFER, vertices, this.gl.STATIC_DRAW);
   }
   
   private async initializeShaders() {
@@ -633,17 +653,14 @@ class NeuralVideoEnhancer {
   private drawQuad(program: WebGLProgram) {
     if (!this.gl) return;
     
-    // Create quad vertices
-    const vertices = new Float32Array([
-      -1, -1, 0, 0,  // bottom-left
-       1, -1, 1, 0,  // bottom-right
-      -1,  1, 0, 1,  // top-left
-       1,  1, 1, 1,  // top-right
-    ]);
+    // Reuse pre-allocated quad buffer for efficiency
+    if (!this.quadBuffer) {
+      this.initializeQuadBuffer();
+    }
     
-    const buffer = this.gl.createBuffer();
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer);
-    this.gl.bufferData(this.gl.ARRAY_BUFFER, vertices, this.gl.STATIC_DRAW);
+    if (!this.quadBuffer) return;
+    
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.quadBuffer);
     
     const positionLoc = this.gl.getAttribLocation(program, 'a_position');
     const texCoordLoc = this.gl.getAttribLocation(program, 'a_texCoord');
@@ -655,8 +672,6 @@ class NeuralVideoEnhancer {
     this.gl.vertexAttribPointer(texCoordLoc, 2, this.gl.FLOAT, false, 16, 8);
     
     this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
-    
-    this.gl.deleteBuffer(buffer);
   }
   
   private readTexture(texture: WebGLTexture, width: number, height: number): ImageData {

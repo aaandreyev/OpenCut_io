@@ -91,9 +91,12 @@ class AIWorkflowAutomation {
     
     this.learningStats.actionsRecorded++;
     
-    // Trigger pattern detection every 10 actions
-    if (this.actionHistory.length % 10 === 0) {
+    // Trigger pattern detection with debouncing (every 50 actions or 30 seconds)
+    const lastDetectionTime = (this as any).lastDetectionTime || 0;
+    if (this.actionHistory.length % 50 === 0 || 
+        Date.now() - lastDetectionTime > 30000) {
       this.detectPatterns();
+      (this as any).lastDetectionTime = Date.now();
     }
     
     // Keep history manageable
@@ -164,9 +167,11 @@ class AIWorkflowAutomation {
   }
   
   private createSequenceSignature(sequence: EditAction[]): string {
-    return sequence.map(action => 
-      `${action.type}:${action.context.elementType}`
-    ).join('-');
+    return sequence.map(action => {
+      // Include key parameters in signature for better pattern matching
+      const paramKeys = Object.keys(action.parameters).sort().slice(0, 3);
+      return `${action.type}:${action.context.elementType}:${paramKeys.join(',')}`;
+    }).join('-');
   }
   
   private findContextualPatterns(): EditPattern[] {

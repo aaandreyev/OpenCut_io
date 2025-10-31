@@ -1,13 +1,13 @@
 /**
- * REVOLUTIONARY AI Live Preview Component
+ * AI Live Preview Component
  * 
- * This component provides INSANE real-time AI analysis overlays on video preview:
+ * This component provides real-time AI analysis overlays on video preview:
  * - Live frame analysis with visual feedback
  * - Real-time effect suggestions with previews
  * - Smart overlay system with performance optimization
  * - Interactive AI assistance that responds to user actions
  * 
- * This is the most advanced video preview system ever built for the web!
+ * Features WebGL-accelerated rendering and adaptive performance optimization.
  */
 
 "use client";
@@ -39,11 +39,7 @@ import {
   formatAnalysisForDisplay
 } from '@/lib/real-time-ai-analyzer';
 
-// Fallback for toast if sonner is not available
-const toast = {
-  success: (message: string) => console.log('✅', message),
-  error: (message: string) => console.error('❌', message),
-};
+import { toast } from "sonner";
 
 interface AILivePreviewProps {
   videoElement: HTMLVideoElement | null;
@@ -79,7 +75,14 @@ export function AILivePreview({
   // Analysis callback
   const handleAnalysisResult = useCallback((result: LiveAnalysisResult) => {
     setCurrentAnalysis(result);
-    setAnalysisHistory(prev => [...prev.slice(-49), result.currentFrame]); // Keep last 50 frames
+    // More efficient: modify array in-place if at capacity
+    setAnalysisHistory(prev => {
+      const maxHistory = 50;
+      if (prev.length >= maxHistory) {
+        return [...prev.slice(1), result.currentFrame];
+      }
+      return [...prev, result.currentFrame];
+    });
     setPerformanceStats({
       fps: result.performance.fps,
       analysisTime: result.performance.analysisTime,
@@ -137,9 +140,12 @@ export function AILivePreview({
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
     
-    // Match canvas size to video
-    canvas.width = videoElement.clientWidth;
-    canvas.height = videoElement.clientHeight;
+    // Match canvas size to video only if needed (prevent flickering)
+    if (canvas.width !== videoElement.clientWidth || 
+        canvas.height !== videoElement.clientHeight) {
+      canvas.width = videoElement.clientWidth;
+      canvas.height = videoElement.clientHeight;
+    }
     
     // Clear previous overlays
     ctx.clearRect(0, 0, canvas.width, canvas.height);

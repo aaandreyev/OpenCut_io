@@ -104,9 +104,14 @@ class MagicAITimeline {
           prevEnergy /= windowSize;
         }
         
-        // Detect beat as significant energy increase
+        // Detect beat as significant energy increase (configurable thresholds)
+        const beatOptions = {
+          energyRatioThreshold: 1.3,
+          minEnergy: 0.01,
+          minBeatInterval: 0.1
+        };
         const energyRatio = prevEnergy > 0 ? energy / prevEnergy : 1;
-        if (energyRatio > 1.3 && energy > 0.01) {
+        if (energyRatio > beatOptions.energyRatioThreshold && energy > beatOptions.minEnergy) {
           // Classify beat type based on frequency analysis (simplified)
           let beatType: 'kick' | 'snare' | 'hihat' | 'bass' | 'melody' = 'kick';
           

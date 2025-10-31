@@ -83,13 +83,14 @@ class SmartAutoCut {
         }
         
         // Generate cut suggestions based on patterns
-        if (analysis.type === 'silence' && analysis.volume < 0.01 && (endTime - startTime) > 0.5) {
+        const silenceDuration = endTime - startTime;
+        if (analysis.type === 'silence' && analysis.volume < 0.01 && silenceDuration > 0.5) {
           // Suggest cutting long silence
           suggestions.push({
-            timestamp: startTime + (endTime - startTime) / 2,
+            timestamp: startTime + silenceDuration / 2,
             reason: 'silence_gap',
             confidence: 0.9,
-            description: `Long silence detected (${Math.round(endTime - startTime)}s)`
+            description: `Long silence detected (${silenceDuration.toFixed(1)}s)`
           });
         }
         

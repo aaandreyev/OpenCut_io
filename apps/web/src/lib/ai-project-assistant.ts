@@ -1,5 +1,5 @@
 /**
- * AI PROJECT ASSISTANT - Revolutionary Contextual Editing Intelligence
+ * AI Project Assistant - Contextual Editing Intelligence System
  * 
  * This system provides intelligent, context-aware assistance throughout the editing process:
  * - Real-time project analysis and suggestions

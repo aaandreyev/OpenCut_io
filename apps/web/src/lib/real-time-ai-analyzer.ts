@@ -182,10 +182,18 @@ class RealTimeAIAnalyzer {
           },
         };
         
-        // Store in history
-        this.analysisHistory.push(frameAnalysis);
-        if (this.analysisHistory.length > 100) {
-          this.analysisHistory.shift();
+        // Store in history using circular buffer pattern
+        const maxHistory = 100;
+        if (this.analysisHistory.length < maxHistory) {
+          this.analysisHistory.push(frameAnalysis);
+        } else {
+          // Circular buffer: overwrite oldest entry
+          const index = (this.analysisHistory.length - maxHistory) % maxHistory;
+          this.analysisHistory[index] = frameAnalysis;
+          if (this.analysisHistory.length >= maxHistory * 2) {
+            // Trim if it grew too large (safety check)
+            this.analysisHistory = this.analysisHistory.slice(-maxHistory);
+          }
         }
         
         // Callback with results

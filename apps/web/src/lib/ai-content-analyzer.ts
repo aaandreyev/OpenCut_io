@@ -1,7 +1,7 @@
 /**
  * AI-Powered Smart Content Analyzer for OpenCut
  * 
- * This revolutionary system uses computer vision and machine learning to automatically analyze
+ * This system uses computer vision and machine learning to automatically analyze
  * video content and provide intelligent editing suggestions. Features include:
  * 
  * - Scene detection and optimal cut point suggestions
@@ -12,15 +12,7 @@
  * - Content categorization for smart timeline organization
  */
 
-// import { toast } from "sonner";
-
-// Fallback toast function if sonner is not available
-const toast = {
-  info: (message: string) => console.log('ℹ️', message),
-  success: (message: string) => console.log('✅', message),
-  error: (message: string) => console.error('❌', message),
-  warning: (message: string) => console.warn('⚠️', message)
-};
+import { toast } from "sonner";
 
 export interface SceneDetection {
   timestamp: number;
@@ -116,7 +108,11 @@ class AIContentAnalyzer {
   /**
    * Main analysis function - processes a video file and returns comprehensive analysis
    */
-  async analyzeVideo(videoFile: File, onProgress?: (progress: number) => void): Promise<ContentAnalysisResult> {
+  async analyzeVideo(
+    videoFile: File, 
+    onProgress?: (progress: number) => void,
+    options?: { analysisInterval?: number }
+  ): Promise<ContentAnalysisResult> {
     try {
       toast.info("🤖 AI Content Analyzer starting...");
       
@@ -129,7 +125,7 @@ class AIContentAnalyzer {
       });
 
       const duration = video.duration;
-      const analysisInterval = 0.5; // Analyze every 0.5 seconds
+      const analysisInterval = options?.analysisInterval || 0.5; // Configurable interval, default 0.5s
       const totalFrames = Math.floor(duration / analysisInterval);
       
       const scenes: SceneDetection[] = [];
@@ -688,9 +684,10 @@ export const aiContentAnalyzer = new AIContentAnalyzer();
  */
 export async function analyzeVideoContent(
   videoFile: File, 
-  onProgress?: (progress: number) => void
+  onProgress?: (progress: number) => void,
+  options?: { analysisInterval?: number }
 ): Promise<ContentAnalysisResult> {
-  return aiContentAnalyzer.analyzeVideo(videoFile, onProgress);
+  return aiContentAnalyzer.analyzeVideo(videoFile, onProgress, options);
 }
 
 /**
